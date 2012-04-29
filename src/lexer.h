@@ -24,10 +24,9 @@
 #ifndef LEXER_H_BICMCZIT
 #define LEXER_H_BICMCZIT
 
-// Set to 0 to disable support for the additional tokens
-#define BMAX_USE_EXTENSIONS 1
-
-#include <stdlib.h>
+// Comment/remove this to disable support for the additional tokens
+// (see README.md/Additions for details)
+#define BMAX_USE_ADDITIONS 1
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,6 +70,7 @@ typedef enum {
 	TOK_LOCAL_KW,
 	TOK_GLOBAL_KW,
 	TOK_CONST_KW,
+	TOK_FIELD_KW,
 
 	TOK_VARPTR_KW,
 	TOK_PTR_KW,
@@ -130,7 +130,7 @@ typedef enum {
 	TOK_NEW_KW,
 	TOK_DELETE_KW,
 
-#if USE_BMX_EXTENSIONS
+#ifdef BMAX_USE_ADDITIONS
 	// extensions
 	TOK_PROTOCOL_KW,
 	TOK_ENDPROTOCOL_KW,
@@ -188,9 +188,17 @@ typedef enum {
 	TOK_ASSIGN_AND,
 	TOK_ASSIGN_OR,
 
+#ifdef BMAX_USE_ADDITIONS
+	TOK_ASSIGN_LSHIFT,
+	TOK_ASSIGN_RSHIFT,
+
+	TOK_LSHIFT,
+	TOK_RSHIFT,
+
 	TOK_ASSIGN_AUTO,
 	TOK_DOUBLEMINUS,
 	TOK_DOUBLEPLUS,
+#endif
 
 	TOK_NUMBER_LIT,
 	TOK_HEX_LIT,
@@ -199,14 +207,13 @@ typedef enum {
 
 	TOK_LINE_COMMENT,
 	TOK_BLOCK_COMMENT,
-
+	
 	TOK_EOF,
-
+	
 	TOK_LAST=TOK_EOF,
 	TOK_COUNT
 } token_kind_t;
 
-extern const char *g_token_names[];
 
 typedef struct s_token {
 	token_kind_t kind;
@@ -225,7 +232,7 @@ int lexer_run(lexer_t *lexer);
 /* returns the error string or NULL if there is no error */
 const char *lexer_get_error(lexer_t *lexer);
 /* returns the number of tokens identified by the lexer */
-int lexer_get_num_tokens(lexer_t *lexer);
+size_t lexer_get_num_tokens(lexer_t *lexer);
 /* returns the kind of the token at the index and copies that token to the provided token if it isn't null */
 token_kind_t lexer_get_token(lexer_t *lexer, size_t index, token_t *token);
 /* returns a copy of all tokens identified by the lexer; number of tokens is copied to num_tokens */
